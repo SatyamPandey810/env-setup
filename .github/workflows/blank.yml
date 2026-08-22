@@ -1,9 +1,11 @@
 name: Env Demo
 on: workflow_dispatch
 env:
-  APP_NEV: "Dev"
+  APP_ENV: "Dev"
 jobs:
   env_demo:
+    env:
+      APP_ENV: 'test'
     runs-on: ubuntu-latest
     steps:
       - name: Connecting to env
