@@ -5,42 +5,42 @@ on:
     branches:
       - main
       - develop
-      - feature/**
+      - 'feature/**'
 
 jobs:
   quality_cheks:
-    if: startsWith(github.ref_name,'feature') && github.event_name == 'push'
+    if: startsWith(github.ref_name, 'feature')
     runs-on: ubuntu-latest
     steps:
       - name: Perform Quality
-        run: exho 'Performing quality cheks on the code'
+        run: echo 'Performing quality checks on the code'
 
   dev_deploy:
-    if: github.ref_name == 'develop' && github.event_name == 'push'
+    if: github.ref_name == 'develop'
     runs-on: ubuntu-latest
     steps:
-      - name: Dev Devploy
-        run: exho 'Deploying the code to development environment'
+      - name: Dev Deploy
+        run: echo 'Deploying the code to development environment'
 
   prod_deploy:
-    if: github.ref_name == 'main' && github.event_name == 'push'
+    if: github.ref_name == 'main'
     runs-on: ubuntu-latest
     steps:
-      - name: Prod Devploy
-        run: exho 'Deploying the code to production environment'
+      - name: Prod Deploy
+        run: echo 'Deploying the code to production environment'
 
   success_notify:
-    needs: ['quality_cheks','dev_deploy','prod_deploy']
-    if: always() && !failure()
+    needs: [quality_cheks, dev_deploy, prod_deploy]
+    if: always() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
     runs-on: ubuntu-latest
     steps:
       - name: Notify Success
-        run: exho 'Success email sent to the team'
- 
+        run: echo 'Success email sent to the team'
+
   failure_notify:
-    needs: ['quality_cheks','dev_deploy','prod_deploy']
-    if: failure()
+    needs: [quality_cheks, dev_deploy, prod_deploy]
+    if: always() && contains(needs.*.result, 'failure')
     runs-on: ubuntu-latest
     steps:
       - name: Notify Failure
-        run: exho 'Failure email sent to the team'
+        run: echo 'Failure email sent to the team'
