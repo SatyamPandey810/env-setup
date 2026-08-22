@@ -1,0 +1,46 @@
+name: Nice if example
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - feature/**
+
+jobs:
+  quality_cheks:
+    if: startsWith(github.ref_name,'feature') && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Perform Quality
+        run: exho 'Performing quality cheks on the code'
+
+  dev_deploy:
+    if: github.ref_name == 'develop' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dev Devploy
+        run: exho 'Deploying the code to development environment'
+
+  prod_deploy:
+    if: github.ref_name == 'main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prod Devploy
+        run: exho 'Deploying the code to production environment'
+
+  success_notify:
+    needs: ['quality_cheks','dev_deploy','prod_deploy']
+    if: always() && !failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Success
+        run: exho 'Success email sent to the team'
+ 
+  failure_notify:
+    needs: ['quality_cheks','dev_deploy','prod_deploy']
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Failure
+        run: exho 'Failure email sent to the team'
